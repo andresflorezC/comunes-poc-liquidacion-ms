@@ -1,0 +1,101 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.7'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'jacoco'
+  //  id "no.nils.wsdl2java" version "0.10"
+}
+
+ext.cxfVersion = "3.5.5"
+
+configurations {
+    jaxb
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    wsdl2java
+}
+
+group = 'com.bolivar.comunes'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+task wsdl2java(type: JavaExec) {
+    main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
+    classpath = configurations.wsdl2java
+    args = [
+            "-d", "src/main/java",
+            "-p", "com.bolivar.comunes.poc_liquidacion.commons.wsdl",
+            "src/main/resources/static/AutosServiceNuevo.xml"
+    ]
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'javax.xml.ws:jaxws-api:2.3.0'
+    implementation 'javax.jws:jsr181-api:1.0-MR1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'javax.activation:javax.activation-api:1.2.0'
+    implementation 'javax.annotation:javax.annotation-api:1.3'
+
+    implementation 'org.glassfish.jaxb:jaxb-runtime'
+    jaxb "com.sun.xml.bind:jaxb-xjc:2.1.7"
+
+    implementation 'com.sun.xml.ws:jaxws-rt:2.3.5'
+    wsdl2java 'javax.xml.bind:jaxb-api:2.3.0'
+    wsdl2java 'com.sun.xml.bind:jaxb-ri:2.3.0'
+    wsdl2java 'com.sun.xml.bind:jaxb-xjc:2.3.0'
+    wsdl2java 'com.sun.xml.bind:jaxb-core:2.3.0'
+    wsdl2java 'com.sun.xml.bind:jaxb-impl:2.3.0'
+
+    wsdl2java 'javax.activation:javax.activation-api:1.2.0'
+    wsdl2java 'javax.annotation:javax.annotation-api:1.3'
+    wsdl2java 'javax.xml.ws:jaxws-api:2.3.0'
+    wsdl2java 'javax.jws:jsr181-api:1.0-MR1'
+
+    wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-core:3.2.2'
+    wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:3.2.2'
+    wsdl2java 'org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:3.2.2'
+
+    testImplementation 'org.mockito:mockito-inline:4.1.0'
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+springBoot {
+    buildInfo {
+        properties {
+            time = null
+        }
+    }
+}
+
+jacoco {
+    toolVersion = '0.8.4'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = true
+    }
+}
+test.finalizedBy jacocoTestReport
